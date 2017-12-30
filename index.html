@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Youtube Downloader - Batal Ngoding</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="keywords" content="video converter, hd converter, free converter, free video converter, online video converter, YouTube converter, YouTube downloader, YouTube to mp3, convert videos from YouTube">
+	<meta name="description" content="Convert video files or videos from YouTube, Vimeo, Dailymotion to many formats in HD quality. No software required, easy to use and totally free!">
+	<meta name="author" content="Sandy Sansan">
+	<meta name="reffer" content="Dion Arya P.">
+	<meta name="api" content="wahidganteng.ga">
+	<link rel="stylesheet" href="./style.css">
+	<link rel="icon" type="image/png" href="./fav.png">
+	<script src="./jquery.js"></script>
+</head>
+<body>
+<header>
+	<h1 class="h1">Batal Ngoding</h1>
+	<small>Youtube Video Downloader</small>
+</header>
+<main>
+	<form onsubmit="return false" name="youtube">
+		<label><strong>Link/URL Video</strong></label> <br><br>
+		<input name="url" id="url" placeholder="https://www.youtube.com/watch?v=x9iHybsGH" type="text">
+		<button type="sumbit" id="convert">Convert</button>
+	</form>
+
+<div class="loader">Loading...</div>
+
+<div id="error">
+	<p id="errorText">Data gagal dimuat. Periksa link anda!</p>
+	<button class="tombol merah" id="lagi">Coba Lagi...</button>
+</div>
+
+<div id="result">
+
+	<div class="judul">
+		<h4 id="judul"></h4>
+	</div>
+
+	<br>
+	
+	<div id="image"></div>
+
+	<h5 id="msg">Unduh :</h5>
+	<div id="resultButton">
+
+	</div>
+	<div class="boxlagi">
+		<button class="tombol merah" id="convertlagi">Convert Lainnya</button>
+	</div>
+</div>
+
+</main>
+<footer class="w3-bottom w3-container">
+	Copyleft &copy; 2017 BatalNgoding.Com [<a href="//sndbkct.xyz" target="_blank" rel="nofollow">Sandy Sansan</a>]
+</footer>
+<script async=''>
+//	$('form').hide();
+	$(".loader").hide();
+	$("#result").hide();
+	$("#error").hide();
+	$("#lagi").click(function(){
+		$('form').show();
+		$("#error").hide();
+	});
+	$("#convertlagi").click(function(){
+		$('form').show();
+		$("#result").hide();
+	});
+	$("#convert").click(function(){
+		if($("input[name=url]").val()=='')
+		{
+			$("input[name=url]").val('Tidak Boleh Kosong');
+			$("input[name=url]").focus().select();
+			return false;
+		}
+
+		var url 	= $("#url").val();
+		var id 		= url.substring(url.lastIndexOf('=') + 1);
+		var apiku 	= 'https://api.batalngoding.com/youtube/v3/d553da2067aae252c0bbbe361682df1e/'+id;
+		$.ajax({
+			method : 'POST',
+			url : apiku,
+			beforeSend: function() {
+				$('.loader').show();
+				$('form').hide();
+			}
+		}).done(function( data ) {
+			if ( data.status=='sukses' ) {
+				$("#judul").html(data.judul);
+				$("#msg").html(data.pesan);
+				$("#result").show();
+				$('#image').html('<img class="gambar" src="https://i.ytimg.com/vi/'+id+'/default.jpg" width="450" height="250">');
+				for (var i = 0; i < data.data.length; i++) {
+					//console.log(data.data[i].type);
+					$('#resultButton').append('\n\t\t<a href="'+data.data[i].tautan+'" target="_blank" class="tombol">'+data.data[i].tipe+' ('+data.data[i].ukuran+')</a>\n');
+				}
+			}
+			else if ( data.status=='gagal' ) {
+				$("#error").show();
+			}
+			$(".loader").hide();
+		}).fail(function(data){
+			console.log(data);
+			if(data.readyState==0)
+			{
+				var errorText = ('Tidak dapat mengubungi server!');
+				//alert(errorText);
+				$('#errorText').html(errorText);
+			}
+			else
+				alert('Gagal mengambil data!');
+			$("#error").show();
+			$('.loader').hide()
+		});
+	});
+</script>
+
+</body></html>
